@@ -3,6 +3,7 @@ import random
 import numpy as np
 import cv2
 import scipy.io as io
+import h5py
 import torch
 from torch.utils.data import Dataset
 
@@ -36,9 +37,10 @@ class HS_multiscale_DSet(Dataset):
         return imglist_A, imglist_B
 
     def __getitem__(self, index):
-        # read an image
         imgpath_A = os.path.join(self.baseroot_A, self.imglist_A[index])
-        img_A = io.loadmat(imgpath_A)['cube']       # (482, 512, 31), in range [0, 1], float64
+        # read an image
+        with h5py.File(imgpath_A, 'r') as f:
+    	    img_A = np.array(f['cube']).transpose(2, 1, 0)
         imgpath_B = os.path.join(self.baseroot_B, self.imglist_B[index])
         img_B = cv2.imread(imgpath_B, -1)           # (482, 512, 3), in range [0, 255], uint8
 
@@ -66,8 +68,8 @@ class HS_multiscale_ValDSet(Dataset):
     def __init__(self, opt):                                   		    # root: list ; transform: torch transform
         self.opt = opt
         # the root of both domains
-        self.baseroot_A = os.path.join(opt.baseroot_val, 'NTIRE2020_Validation_Spectral')
-        self.baseroot_B = os.path.join(opt.baseroot_val, 'NTIRE2020_Validation_Clean')
+        self.baseroot_A = os.path.join(opt.baseroot_val, 'VIS')
+        self.baseroot_B = os.path.join(opt.baseroot_val, 'RGB')
         namelist = self.get_names(self.baseroot_A)
         # build image list
         self.imglist_A, self.imglist_B = self.build_imglist(namelist, opt)
@@ -77,7 +79,7 @@ class HS_multiscale_ValDSet(Dataset):
         ret = []
         for root, dirs, files in os.walk(path):  
             for filespath in files: 
-                ret.append(filespath[:12])          # e.g. ARAD_HS_0001
+                ret.append(filespath[:12])          # e.g. ARAD_1K_0901
         return ret
         
     def build_imglist(self, namelist, opt):
@@ -86,13 +88,14 @@ class HS_multiscale_ValDSet(Dataset):
         imglist_B = []
         for i in range(len(namelist)):
             imglist_A.append(namelist[i] + '.mat')
-            imglist_B.append(namelist[i] + '_clean.png')
+            imglist_B.append(namelist[i] + '.jpg')
         return imglist_A, imglist_B
 
     def __getitem__(self, index):
         # read an image
         imgpath_A = os.path.join(self.baseroot_A, self.imglist_A[index])
-        img_A = io.loadmat(imgpath_A)['cube']       # (482, 512, 31), in range [0, 1], float64
+        with h5py.File(imgpath_A, 'r') as f:
+    	    img_A = np.array(f['cube']).transpose(2, 1, 0)
         imgpath_B = os.path.join(self.baseroot_B, self.imglist_B[index])
         img_B = cv2.imread(imgpath_B, -1)           # (482, 512, 3), in range [0, 255], uint8
         imgname = self.imglist_A[index].split('.')[0]
