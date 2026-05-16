@@ -17,7 +17,9 @@ if __name__ == "__main__":
     parser.add_argument('--save_by_iter', type = int, default = 100000, help = 'interval between model checkpoints (by iterations)')
     parser.add_argument('--load_name', type = str, default = '', help = 'load the pre-trained model with certain epoch')
     # GPU parameters
-    parser.add_argument('--multi_gpu', type = bool, default = True, help = 'True for more than 1 GPU')
+    parser.add_argument('--multi_gpu', action='store_true')
+    parser.add_argument('--single_gpu', dest='multi_gpu', action='store_false') 
+    parser.set_defaults(multi_gpu=False)
     parser.add_argument('--gpu_ids', type = str, default = '0, 1, 2, 3', help = 'gpu_ids: e.g. 0  0,1  0,1,2  use -1 for CPU')
     parser.add_argument('--cudnn_benchmark', type = bool, default = True, help = 'True for unchanged input data type')
     # Training parameters

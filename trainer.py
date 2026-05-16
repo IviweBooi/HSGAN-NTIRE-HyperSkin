@@ -66,7 +66,7 @@ def Trainer(opt):
             model_name = 'G_epoch%d_bs%d.pth' % (epoch, opt.batch_size)
         if opt.save_mode == 'iter':
             model_name = 'G_iter%d_bs%d.pth' % (iteration, opt.batch_size)
-        save_model_path = os.path.join(opt.save_path, model_name)
+        save_model_path = os.path.join(save_model_folder, model_name)
         # Save model
         if opt.multi_gpu == True:
             if opt.save_mode == 'epoch':
