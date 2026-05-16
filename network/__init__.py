@@ -1,3 +1,4 @@
+import torch
 import network.awan
 import network.effcnn 
 import network.hrnet
@@ -10,6 +11,7 @@ import network.mxrunet
 import network.n2d3dcnn
 import network.rscnn
 import network.unet
+#from torch import *
 #from network.awan import *
 #from network.effcnn import *
 #from network.hrnet import *
